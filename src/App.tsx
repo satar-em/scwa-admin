@@ -25,7 +25,7 @@ export default function App(props: any) {
                 </li>
             </ul>
             <div className="container-lg">
-                <Outlet/>
+                <Outlet context={{handleClickLink}} />
             </div>
         </div>
     );

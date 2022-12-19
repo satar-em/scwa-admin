@@ -5,7 +5,7 @@ export default function Chat(props: any) {
     const params=useParams()
     return (
         <div>
-            Chat
+            Chat {params.userId?`(id is ${params.userId})`:""}
         </div>
     );
 }

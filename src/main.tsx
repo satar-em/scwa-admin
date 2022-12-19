@@ -23,7 +23,7 @@ const router = RRD.createBrowserRouter([
                 element:<UserStatus />
             },
             {
-                path:"chat/:code?/*",
+                path:"chat/:userId?/*",
                 element:<Chat />
             },
             {

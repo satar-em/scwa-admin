@@ -10,15 +10,17 @@ import {
     GridSelectionModel,
     GridValueGetterParams
 } from "@mui/x-data-grid";
+import {useNavigation} from "react-router-dom";
+import {useContext} from "react";
 
 export default function UserStatus(props: any) {
     const navigate = RRd.useNavigate()
-    const outletContext=RRd.useOutletContext() as any
+    const outletContext = RRd.useOutletContext() as any
     const [state, setState] = React.useState({data: []})
     React.useEffect(() => {
         Axios.default({
             method: "GET",
-            url: "http://192.168.1.107:8080/scwa/rest-api/user-status/all",
+            url: "http://192.168.1.105:8080/scwa/rest-api/user-status/all",
             headers: {Authentication: "admin-Satar"}
         }).then((response: any) => {
             //console.log(response.data)
@@ -30,33 +32,44 @@ export default function UserStatus(props: any) {
     }, [])
     const changeSelection = (selectionModel: GridSelectionModel, details: GridCallbackDetails) => {
     }
-    const onClickGoToChat = (id:any) => {
+    const onClickGoToChat = (id: any) => {
         outletContext.handleClickLink(2)
-        navigate("/chat/"+id)
+        navigate("/chat/" + id)
     }
     const columns: GridColDef[] = [
-        {field: 'id', headerName: 'ID', width: 100, align: "left",headerAlign:"left"},
-        {field: 'name', headerName: 'Name', width: 130},
-        {field: 'type', headerName: 'Type', width: 130},
-        {field: 'statusType', headerName: 'Status Type', width: 150,},
+        {field: 'id', headerName: 'ID', align: "left", minWidth: 80, headerAlign: "left", flex: 1},
+        {field: 'name', headerName: 'Name', minWidth: 150, flex: 1},
+        {field: 'type', headerName: 'Type', minWidth: 100, flex: 1},
+        {field: 'statusType', headerName: 'Status Type', minWidth: 100, flex: 1},
         {
             field: 'demoAction',
             headerName: 'Demo Render',
             description: 'This column has a value getter and is not sortable.',
-            sortable: false,
-            width: 160,
-            renderCell: (params: GridRenderCellParams) => <Button variant="contained" size={"small"} onClick={()=>onClickGoToChat(params.row.id)}>Chat</Button>,
+            sortable: false, minWidth: 100, flex: 1,
+            renderCell: (params: GridRenderCellParams) => <Button variant="contained" size={"small"}
+                                                                  onClick={() => onClickGoToChat(params.row.id)}>Chat</Button>,
+        },
+        {
+            field: 'connect',
+            headerName: 'Connect Status',
+            description: 'This column has a value getter and is not sortable.',
+            sortable: false, minWidth: 150, flex: 1,
+            renderCell: (params: GridRenderCellParams) =>
+                <div>{params.row.id === outletContext.connectedUser ? "Connected with you" : ""}</div>,
         },
         /*{field: 'fullName', headerName: 'Full name', description: 'This column has a value getter and is not sortable.', sortable: false, width: 160, valueGetter: (params: GridValueGetterParams) => `${params.row.firstName || ''} ${params.row.lastName || ''}`,},*/
     ];
     return (
-        <div style={{height: 600, width: '100%'}}>
+        <div>
             <DataGrid
+                autoHeight
                 rows={state.data}
                 columns={columns}
                 pageSize={5}
                 rowsPerPageOptions={[5]}
                 disableColumnFilter
+                disableSelectionOnClick
+                disableColumnMenu
                 /*checkboxSelection
                 disableSelectionOnClick
                 onSelectionModelChange={changeSelection}*/

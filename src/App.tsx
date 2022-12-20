@@ -3,7 +3,7 @@ import * as Material from "@mui/material"
 import {Link, Outlet, useLocation} from "react-router-dom";
 
 export default function App(props: any) {
-    const [state,setState]=React.useState({currentPage:0,websocket:null,connectedUser:null})
+    const [state,setState]=React.useState({currentPage:0,websocket:null,connectedUser:null,serverObjects: [] as WebSocketObject[]})
     let location = useLocation();
 
     React.useEffect(() => {
@@ -34,6 +34,10 @@ export default function App(props: any) {
         state.connectedUser=id
         setState({...state})
     }
+    const setServerObjects=(ServerObjects :WebSocketObject[])=>{
+        state.serverObjects=ServerObjects
+        setState({...state})
+    }
     return (
         <div>
             <ul className="nav nav-tabs justify-content-center bg-light">
@@ -48,8 +52,18 @@ export default function App(props: any) {
                 </li>
             </ul>
             <div className="container-lg">
-                <Outlet context={{handleClickLink,websocket:state.websocket,setWebsocket:setWebsocket,setConnectedUser,connectedUser:state.connectedUser}} />
+                <Outlet context={{handleClickLink,websocket:state.websocket,setWebsocket:setWebsocket,setConnectedUser,connectedUser:state.connectedUser,serverObjects:state.serverObjects,setServerObjects}} />
             </div>
         </div>
     );
+}
+
+export interface WebSocketObject {
+    messageType: string,
+    userType: string,
+    from: string,
+    to: string,
+    content: string,
+    authentication: string
+
 }

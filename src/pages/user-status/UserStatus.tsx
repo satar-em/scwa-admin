@@ -20,10 +20,9 @@ export default function UserStatus(props: any) {
     React.useEffect(() => {
         Axios.default({
             method: "GET",
-            url: "http://192.168.1.105:8080/scwa/rest-api/user-status/all",
+            url: "http://192.168.1.107:8080/scwa/rest-api/user-status/all",
             headers: {Authentication: "admin-Satar"}
         }).then((response: any) => {
-            //console.log(response.data)
             state.data = response.data
             setState({...state})
         }).catch((reason: any) => {
@@ -46,8 +45,8 @@ export default function UserStatus(props: any) {
             headerName: 'Demo Render',
             description: 'This column has a value getter and is not sortable.',
             sortable: false, minWidth: 100, flex: 1,
-            renderCell: (params: GridRenderCellParams) => <Button variant="contained" size={"small"}
-                                                                  onClick={() => onClickGoToChat(params.row.id)}>Chat</Button>,
+            renderCell: (params: GridRenderCellParams) => params.row.statusType==="Waiting"?<Button variant="contained" size={"small"}
+                                                                  onClick={() => onClickGoToChat(params.row.id)}>Chat</Button>:"",
         },
         {
             field: 'connect',

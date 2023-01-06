@@ -12,26 +12,19 @@ export default function Chat(props: any) {
         if (outletContext.websocket) {
             outletContext.websocket.close()
         }
-        const webSocket = new WebSocket("ws://192.168.1.107:8080/scwa/chat-user")
+        const webSocket = new WebSocket("ws://localhost:8080/scwa/chat-user")
         webSocket.onopen = (ev: Event) => {
             outletContext.setConnectedUser(params.userId)
             outletContext.setWebsocket(webSocket)
-            webSocket.send("{\"messageType\":\"JoinToServer\",\"userType\":\"admin\",\"from\":\"\",\"to\":\"\",\"content\":\"Mohammad Emami\",\"authentication\":\"admin-Satar\"}")
-            /*const sendObject: WebSocketObject = {
-                messageType: "ConnectToChatWithMe",
-                from: "",
-                to: "",
-                authentication: "admin-Satar",
-                userType: "admin",
-                content: outletContext.connectedUser
-            }
-            webSocket.send(JSON.stringify(sendObject))*/
+            webSocket.send("{\"messageType\":\"JoinToServer\",\"userType\":\"admin\",\"from\":\"\",\"to\":\"\",\"content\":\"Mohammad Emami On Client\",\"authentication\":\"admin-Satar\"}")
+            setTimeout(()=>{
+                webSocket.send("{\"messageType\":\"ConnectToChatWithMe\",\"userType\":\"admin\",\"from\":\"\",\"to\":\"\",\"content\":\""+params.userId+"\",\"authentication\":\"admin-Satar\"}")
+            },1000)
         }
-
-        webSocket.onmessage = (ev: MessageEvent) => {
-            const serverObjects = [...outletContext.serverObjects]
-            serverObjects.push(JSON.parse(ev.data) as WebSocketObject)
-            outletContext.setServerObjects(serverObjects)
+        const localChatObject=[...outletContext.serverObjects]
+        webSocket.onmessage =(ev: MessageEvent) => {
+            localChatObject.push(JSON.parse(ev.data) as WebSocketObject)
+            outletContext.setServerObjects(localChatObject)
         }
         webSocket.onclose = (ev: CloseEvent) => {
             outletContext.setServerObjects([])
@@ -78,7 +71,6 @@ function ChatItem(props: any) {
     const styleCenter = {display: "flex", justifyContent: "center"}
     return (
         <div style={{width: "100%"}}>
-            <div style={styleCenter}>state.clientId = {state.clientId}</div>
             {/*{(outletContext.serverObjects as WebSocketObject[]).map((value, index) =>
                 value.messageType === "ChatWithEach" ?
                     <div style={styleCenter} key={index}>
@@ -87,14 +79,15 @@ function ChatItem(props: any) {
                     :
                     ""
             )}*/}
+            
             <div style={styleCenter}>
                 <Button variant="contained" onClick={props.onClickDisConnectToUser}>DisConnect</Button>
             </div>
-            {(outletContext.serverObjects as WebSocketObject[]).map((value, index) =>
+            {/*{(outletContext.serverObjects as WebSocketObject[]).map((value, index) =>
                     <div style={styleCenter} key={index}>
                         {JSON.stringify(value)}
                     </div>
-            )}
+            )}*/}
         </div>
     )
 }

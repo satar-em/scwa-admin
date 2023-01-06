@@ -20,7 +20,7 @@ export default function UserStatus(props: any) {
     React.useEffect(() => {
         Axios.default({
             method: "GET",
-            url: "http://192.168.1.107:8080/scwa/rest-api/user-status/all",
+            url: "http://localhost:8080/scwa/rest-api/user-status/all",
             headers: {Authentication: "admin-Satar"}
         }).then((response: any) => {
             state.data = response.data

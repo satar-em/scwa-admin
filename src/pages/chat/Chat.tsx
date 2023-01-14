@@ -1,8 +1,10 @@
 import * as React from "react";
 import {useParams} from "react-router-dom";
 import * as RRd from "react-router-dom";
-import {Button} from "@mui/material";
+import {Button, IconButton, TextField} from "@mui/material";
+import * as MuiIcons from "@mui/icons-material";
 import {WebSocketObject} from "../../App";
+import {PhotoCamera} from "@mui/icons-material";
 
 export default function Chat(props: any) {
     const params = useParams()
@@ -35,6 +37,7 @@ export default function Chat(props: any) {
     const onClickDisConnectToUser = () => {
         outletContext.websocket.close()
     }
+
     const styleReceive = {display: "flex", justifyContent: "left"}
     const styleSend = {display: "flex", justifyContent: "right"}
     const styleCenter = {display: "flex", justifyContent: "center"}
@@ -56,7 +59,8 @@ export default function Chat(props: any) {
 
 function ChatItem(props: any) {
     const outletContext = RRd.useOutletContext() as any
-    const [state, setState] = React.useState({clientId: null})
+    const params = useParams()
+    const [state, setState] = React.useState({clientId: null,inputValue:""})
     React.useEffect(() => {
         const chatObject = outletContext.serverObjects as WebSocketObject[]
         chatObject.forEach(value => {
@@ -66,20 +70,40 @@ function ChatItem(props: any) {
             }
         })
     }, [outletContext.serverObjects])
+    const onChangeInput=(ev:any)=>{
+        state.inputValue=ev.target.value
+        setState({...state})
+    }
+    const onClickSend = () => {
+        const message=state.inputValue
+        state.inputValue=""
+        setState({...state})
+        outletContext.websocket.send("{\"messageType\":\"ChatWithEach\",\"userType\":\"admin\",\"from\":\""+state.clientId+"\",\"to\":\""+params.userId+"\",\"content\":\""+message+"\",\"authentication\":\"admin-Satar\"}")
+    }
     const styleReceive = {display: "flex", justifyContent: "left"}
     const styleSend = {display: "flex", justifyContent: "right"}
     const styleCenter = {display: "flex", justifyContent: "center"}
     return (
         <div style={{width: "100%"}}>
-            {/*{(outletContext.serverObjects as WebSocketObject[]).map((value, index) =>
+            {(outletContext.serverObjects as WebSocketObject[]).map((value, index) =>
                 value.messageType === "ChatWithEach" ?
-                    <div style={styleCenter} key={index}>
-                        {JSON.stringify(value)}
+                    <div style={value.from===state.clientId?styleSend:styleReceive} key={index}>
+                        <div  className="card p-1" >
+                            {value.content}
+                        </div>
                     </div>
                     :
                     ""
-            )}*/}
+            )}
             
+            <div style={{...styleCenter,margin:5}}>
+                <TextField onChange={onChangeInput} value={state.inputValue} style={{width:"80%"}} placeholder="typing..." label="Chat" variant="outlined" />
+                <div onClick={onClickSend}>
+                    <IconButton style={{marginLeft:10}} color="primary" component="label">
+                        <MuiIcons.Send/>
+                    </IconButton>
+                </div>
+            </div>
             <div style={styleCenter}>
                 <Button variant="contained" onClick={props.onClickDisConnectToUser}>DisConnect</Button>
             </div>
